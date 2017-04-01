@@ -69,13 +69,27 @@ def pin_timeout():
     rfidGui.pin_timeout_passed = True
     print ('pin timeout')
 
+def my_func():
+    print ('STARTED')
+    root = _root
+    while root != None:
+        super(rfidGui.__class__, rfidGui).show_card_waiting_screen(root)
+        UID = nfcMod.readUID(ATR, apdu)
+        if UID == None:
+            super(rfidGui.__class__, rfidGui).show_swipe_retry_screen(root)
+            time.sleep(2)
+            continue
+
+        print('Card Swiped :',UID)
+        cardByUIDResponse = commMod.getCardByUID(UID)
+        print(cardByUIDResponse)
 
 ## This function holds the main functionality of the system
 def main_func():
 
     root = _root
 
-    while root != None:
+    while root != None :
             
         super(rfidGui.__class__,rfidGui).show_card_waiting_screen(root)
 
@@ -165,7 +179,7 @@ def _quit(event):
 
 ## This function starts the main functionality as an asynchronous thread to the main GUI thread
 def runMain():
-    Thread(target = main_func).start()
+    Thread(target = my_func).start()
 
 
 def main():

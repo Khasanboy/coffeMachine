@@ -25,7 +25,12 @@ class configFileReader():
 
         comm_metadata = Config.items("Communication")
         HEADER = comm_metadata[0][1]
-        services = [comm_metadata[1][1],comm_metadata[2][1],comm_metadata[3][1]]
+        services = [comm_metadata[1][1],
+                    comm_metadata[2][1],
+                    comm_metadata[3][1],
+                    comm_metadata[4][1],
+                    comm_metadata[5][1],
+                    ]
 
 
         ##NFC

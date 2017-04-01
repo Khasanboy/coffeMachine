@@ -13,7 +13,8 @@ class Communication_Module:
     STATION_AUTH_CMD = ""
     VERIFY_UID_CMD = ""
     VERIFY_PIN_CMD = ""
-
+    CARD_LIST_CMD = ""
+    CARD_BY_UID = ""
 
     ## The constructor will set the header and web service commands according
     ## to the values extracted from the config file
@@ -21,8 +22,8 @@ class Communication_Module:
         self.STATION_AUTH_CMD = services[0]
         self.VERIFY_UID_CMD = services[1]
         self.VERIFY_PIN_CMD =services[2]
-
-        
+        self.CARD_LIST_CMD = services[3]
+        self.CARD_BY_UID = services[4]
         self.HEADER = header
 
 
@@ -37,11 +38,32 @@ class Communication_Module:
         try:
             response = requests.post(url, data=json.dumps(params), verify='certificates/ca.crt')
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-            print ('connection error')
+            print '\nconnection error'
             return None
 
         return response.json()                  
         
+    def get(self,url,params):
+        url = url + params
+        try:
+            print '\nGET:Request' + url
+            response = requests.get(url)
+            print '\nGETResponse' + url
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+            print ('connection error')
+            return None
+        return response.json()
+
+    def getCardByUID(self,uid):
+        url = self.HEADER + self.CARD_BY_UID
+        params = '/'+uid
+
+        jsonResponse = self.get(url,params)
+        if jsonResponse == None:
+            print('Card with UID not found')
+            return None
+        print(jsonResponse)
+        return (True,jsonResponse)
 
     ## This function used to authorize the station
     def authorizeStation(self, station_id, station_secrect):
@@ -51,6 +73,7 @@ class Communication_Module:
         jsonResponse = self.post(url,params)
 
         if jsonResponse == None:
+            print ('Authorization error')
             return None
         
         
@@ -71,7 +94,8 @@ class Communication_Module:
         jsonResponse = self.post(url,params)
 
         if jsonResponse == None:
-                    return None
+            print('connection error')
+            return None
         
         if jsonResponse['code'] == 0:
             return (True,jsonResponse['data']['card_token'])
@@ -93,6 +117,7 @@ class Communication_Module:
         jsonResponse = self.post(url,params)
 
         if jsonResponse == None:
+            print('verify pin error')
             return None
 
         
